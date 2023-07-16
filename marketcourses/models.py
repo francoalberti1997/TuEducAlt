@@ -28,7 +28,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='marketcourses/static/marketcourses/img', blank=True, null=True)
     thumbnail = models.ImageField(upload_to='marketcourses/static/marketcourses/img', blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
-
+#cambiando a ramab
     class Meta:
         ordering = ('-date_added',)
     
