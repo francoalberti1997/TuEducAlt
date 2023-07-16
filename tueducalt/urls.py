@@ -21,13 +21,14 @@ from . import views
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.home),
     path('accounts/', include('django.contrib.auth.urls'), name='login'),
     # path('campus/', TemplateView.as_view(template_name = 'campus.html')),
     path('campus/', views.campus),
-    path('signup/', views.signup, name="signup"),
+    path('signup_2/', views.signup, name="signup_2"),
     path('api/', include('marketcourses.urls')),
 ] 
 

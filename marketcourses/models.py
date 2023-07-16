@@ -3,6 +3,11 @@ from django.db import models
 from io import BytesIO
 from PIL import Image
 from django.core.files import File
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.signals import pre_save
 
 # Create your models here.
 class Category(models.Model):
@@ -66,13 +71,14 @@ class Archivos_pagina(models.Model):
     name = models.CharField(max_length=50)
     img = models.ImageField(upload_to='marketcourses/static/marketcourses/img')
 
+
 class Estudiantes(models.Model):
-    nombre = models.CharField(max_length=50)
-    apellido = models.CharField(max_length=50)
-    edad = models.IntegerField()
-    mail = models.EmailField()
+    nombre = models.CharField(max_length=50, null=True)
+    apellido = models.CharField(max_length=50, null=True)
+    edad = models.IntegerField(null=True)
+    mail = models.EmailField(null=True)
     imagen = models.ImageField(upload_to='marketcourses/static/marketcourses/img', blank=True, null=True, default=None)
-    tiene_img = models.BooleanField(default=False, blank=True)
+    tiene_img = models.BooleanField(default=False, blank=True, null=True)
     lista_rates = [(1, "Muy bien"), (2, "Buena"), (3, "Mala")]
     estrellas = models.IntegerField(choices=lista_rates, blank=True, null=True, default=None)
     opiniones = models.CharField(max_length=80, blank=True, null=True, default=None)
@@ -81,20 +87,17 @@ class Estudiantes(models.Model):
     def __init__(self, *args, **kwargs):
         super(Estudiantes, self).__init__(*args, **kwargs)
         self.set_estudiantes()
-    
+
     def set_estudiantes(self):
         if not self.tiene_imagen():
             self.opinion_completa = False
-            return 
-        
+            return
         for field in self._meta.get_fields():
             if getattr(self, field.name) is None:
                 self.opinion_completa = False
                 return
-            
         self.opinion_completa = True
-        return True
-    
+
     def tiene_imagen(self):
         if self.imagen:
             self.tiene_img = True
@@ -102,3 +105,23 @@ class Estudiantes(models.Model):
         else:
             self.tiene_img = False
             return False
+
+
+# @receiver(pre_save, sender=Estudiantes)
+# def asignar_usuario(sender, instance, **kwargs):
+#     print("ingresando a ala SIGNAL")
+#     if not instance.user:
+#         instance.user = User.objects.create_user(username=instance.username, password=instance.password)
+
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Estudiantes.objects.create(user=instance)
+
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     try:
+#         estudiantes = instance.estudiantes
+#     except ObjectDoesNotExist:
+#         estudiantes = Estudiantes.objects.create(user=instance)
+#     estudiantes.save()

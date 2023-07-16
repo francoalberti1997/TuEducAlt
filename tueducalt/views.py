@@ -16,6 +16,7 @@ def campus(request):
     contexto = {"estudiantes":estudiantes}
     return render(request, 'campus.html', contexto)
 
+
 def signup(request):
     url_api = settings.api_base_url + 'estudiantes/'
     response = requests.get(url_api)
@@ -43,7 +44,7 @@ def signup(request):
             response = requests.post(url_api, data=data, files=files)
             print("enviando")
         else:
-            return HttpResponse("NO paso el is_valid")
+            return HttpResponse(f"{form.errors}")
         
         if response.status_code == 201:
             return HttpResponse("Usuario creado")
@@ -53,7 +54,7 @@ def signup(request):
         form = SignupForm()
 
     contexto = {"estudiantes":estudiantes, "form":form}
-    return render(request, 'registration/signup.html', contexto)
+    return render(request, 'registration/signup_2.html', contexto)
 
 def home(request):
     response = requests.get(settings.api_base_url + 'cursos/')

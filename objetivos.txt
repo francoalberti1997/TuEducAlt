@@ -1,5 +1,9 @@
+*relacionar clase User con Estudiantes(trabajando)
+
+SIGN UP
+
+
+*iconos de FB, etc de footer abajo-problem con icono wsp
 *Arreglar para difs navegadores
 *Seguir trabajando en el inicio de sesion 
 *seccion por qué elegirnos o about us
-*relacionar clase User con Estudiantes(trabajando)
-*iconos de FB, etc de footer abajo-problem con icono wsp
