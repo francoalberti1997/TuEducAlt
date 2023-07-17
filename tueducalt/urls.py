@@ -30,6 +30,8 @@ urlpatterns = [
     path('campus/', views.campus),
     path('signup_2/', views.signup, name="signup_2"),
     path('api/', include('marketcourses.urls')),
+    path('login/', views.login, name="login"),
+    path('register/', views.register, name="register"),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

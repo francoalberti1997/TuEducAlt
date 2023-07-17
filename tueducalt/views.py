@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from marketcourses import models
 import requests
@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from marketcourses.forms import LoginForm
 from marketcourses.forms import SignupForm, UserForm
+from django.contrib.auth.forms import UserCreationForm
 
 
 def campus(request):
@@ -16,6 +17,21 @@ def campus(request):
     contexto = {"estudiantes":estudiantes}
     return render(request, 'campus.html', contexto)
 
+def login(request):
+    context = {}
+    return render(request, "registration/login.html", context)
+
+def register(request):
+    form = UserForm()
+    
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+
+    context = {'form':form}
+    return render(request, "registration/signup.html", context)
 
 def signup(request):
     url_api = settings.api_base_url + 'estudiantes/'
