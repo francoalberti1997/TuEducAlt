@@ -111,7 +111,7 @@ def signup(request):
 def home(request):
     response = requests.get(settings.api_base_url + 'cursos/')
     productos = response.json()
-
+  
     logo_response = requests.get(settings.api_base_url + 'files/')
     logo = logo_response.json()[0]
 
