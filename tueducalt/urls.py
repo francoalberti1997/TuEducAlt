@@ -27,11 +27,21 @@ urlpatterns = [
     path('home/', views.home),
     path('accounts/', include('django.contrib.auth.urls'), name='login'),
     # path('campus/', TemplateView.as_view(template_name = 'campus.html')),
-    path('campus/', views.campus),
+    path('campus/', views.campus, name="campus"),
     path('signup_2/', views.signup, name="signup_2"),
     path('api/', include('marketcourses.urls')),
-    path('login/', views.login, name="login"),
+    path('login/', views.login_campus, name="login"),
+    path('logout/', views.logout_campus, name="logout"),
     path('register/', views.register, name="register"),
+    
+    path('reset_password/', auth_views.PasswordResetView.as_view(template_name = "registration/password_reset.html"), name="reset_password"),
+
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="registration/password_reset_sent.html"), name="password_reset_done"),
+    
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="registration/password_change_form.html"), name="password_reset_confirm"),
+    
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="registration/password_reset_complete.html"), name="password_reset_complete"),
+
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

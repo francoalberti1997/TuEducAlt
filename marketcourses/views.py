@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
+from tueducalt.decorators import unauthenticated_user, allowed_users
 
 
 class Archivos_pagina_LIST(APIView):
@@ -27,6 +28,7 @@ class Archivos_pagina_LIST(APIView):
 #         return Response(serializer.data)
 
 @api_view(['GET', 'POST'])
+@allowed_users(allowed_roles = ["admin"])
 def get_product(request, *args, **kwargs):
     if request.method == 'POST':
         serializer = ProductSerializer(data=request.data)

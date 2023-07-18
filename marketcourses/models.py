@@ -73,6 +73,7 @@ class Archivos_pagina(models.Model):
 
 
 class Estudiantes(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=50, null=True)
     apellido = models.CharField(max_length=50, null=True)
     edad = models.IntegerField(null=True)

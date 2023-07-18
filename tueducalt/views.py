@@ -5,33 +5,68 @@ import requests
 import json
 from . import settings
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from marketcourses.forms import LoginForm
 from marketcourses.forms import SignupForm, UserForm
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated_user, allowed_users, admin_only
 
 
+@login_required(login_url='login')
 def campus(request):
     response = requests.get(settings.api_base_url + 'estudiantes/')
     estudiantes = response.json()
     contexto = {"estudiantes":estudiantes}
     return render(request, 'campus.html', contexto)
 
-def login(request):
+@unauthenticated_user
+def login_campus(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect("campus") 
+        else:
+            messages.info(request, 'Username o Password Incorrecto')
+
     context = {}
     return render(request, "registration/login.html", context)
 
-def register(request):
-    form = UserForm()
-    
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("login")
+def logout_campus(request):
+    logout(request)
+    return redirect("login")
 
-    context = {'form':form}
-    return render(request, "registration/signup.html", context)
+@unauthenticated_user
+def register(request):
+    if request.user.is_authenticated:
+        return redirect("campus")
+    else:        
+        if request.method == 'POST':
+            form = UserForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                username = form.cleaned_data.get('username')
+                email = form.cleaned_data.get('email')
+                group = Group.objects.get(name="customer")
+                
+                user.groups.add(group)
+                messages.success(request, "Cuenta creada por ... " + username)
+                models.Estudiantes.objects.create(user = user, nombre = username, mail = email)
+                return redirect("login")
+            else:
+                return HttpResponse("Escribir lógica por si ya hay usuarios con ese username o email")
+        else:
+            form = UserForm()  # Asignar un valor inicial a 'form'
+            context = {'form': form}
+            
+        return render(request, "registration/signup.html", context)
 
 def signup(request):
     url_api = settings.api_base_url + 'estudiantes/'
@@ -72,6 +107,7 @@ def signup(request):
     contexto = {"estudiantes":estudiantes, "form":form}
     return render(request, 'registration/signup_2.html', contexto)
 
+@allowed_users(allowed_roles = ["admin"])
 def home(request):
     response = requests.get(settings.api_base_url + 'cursos/')
     productos = response.json()
